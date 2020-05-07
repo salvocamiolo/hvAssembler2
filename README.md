@@ -1,4 +1,4 @@
-# hvAssembler2
+# hvAssembler
 
 ## Aim
 The software aims to deduplicate the reads originated from the hyper variable
@@ -31,16 +31,19 @@ If the number of threads is not specified it will run on 1 thread
 In the output folder you will find the following:
 
 deduplicationStatistics.txt
+
 this is a file reporting the number of mapped reads before and after the deduplication,
 which should give you an idea of the clonality. In principle it should be similar to that
 observed on Merlin, if Maha pipeline uses picard to mark duplicates
 
 reads/
+
 In this folder you will find for each gene the fastq file reporting the deduplicated reads
 A concatenated fastq file is also generated, namely all_1.fastq /all_2.fastq. These can
 be used to re-run the genotyping with only deduplicated reads
 
 scaffolds/
+
 In this folder you will find a spades assembly for the reads belonging to each hypervariable
 gene. Here you may find some new genotype if present. 
         
