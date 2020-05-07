@@ -25,7 +25,7 @@ for gene in hvg:
 	print("Indexing reference for gene %s" %gene)
 	os.system(condaDir+"/bin/bowtie2-build -q ./elongedCDS/"+gene+"_elongedCDS.fasta reference > null 2>&1")
 	print("Aligning reads to reference....")
-	os.system(condaDir+"/bin/bowtie2 --very-sensitive-local -1 "+read1+" -2 "+read2+" -x reference -S alignment.sam -a -p "+threads+" > null 2>&1")
+	os.system(condaDir+"/bin/bowtie2 --very-sensitive-local -1 "+read1+" -2 "+read2+" -x reference -S alignment.sam -p "+threads+" > null 2>&1")
 	print("Coverting sam to bam....")
 	os.system(condaDir+"/bin/samtools view -h -bS alignment.sam > alignment.bam")
 	print("Collecting first mapped reads....")
