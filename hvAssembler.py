@@ -21,12 +21,14 @@ else:
 hvg = ['RL12','RL13','RL5A','RL6','UL11','UL120','UL139','UL146','UL1','UL20','UL73','UL74','UL9']
 os.system("mkdir -p ./"+outputFolder+"/reads")
 os.system("mkdir -p ./"+outputFolder+"/scaffolds")
+outfile = open("./"+outputFolder+"/deduplicationStats.txt","w")
+outfile.write("Gene\tOriginal_Mapped_Reads\tDeduplicate_Mapped_Reads\n")
 
 for gene in hvg:
 	print("Indexing reference for gene %s" %gene)
-	os.system(condaDir+"/bin/bowtie2-build -q ./elongedCDS/"+gene+"_elongedCDS.fasta reference") #> null 2>&1")
+	os.system(condaDir+"/bin/bowtie2-build -q ./elongedCDS/"+gene+"_elongedCDS.fasta reference > null 2>&1")
 	print("Aligning reads to reference....")
-	os.system(condaDir+"/bin/bowtie2 --very-sensitive-local -1 "+read1+" -2 "+read2+" -x reference -S alignment.sam -p "+threads) #+ " > null 2>&1")
+	os.system(condaDir+"/bin/bowtie2 --very-sensitive-local -1 "+read1+" -2 "+read2+" -x reference -S alignment.sam -p "+threads+ " > null 2>&1")
 	print("Coverting sam to bam....")
 	os.system(condaDir+"/bin/samtools view -h -bS alignment.sam > alignment.bam")
 	print("Collecting first mapped reads....")
@@ -53,6 +55,7 @@ for gene in hvg:
 	infile = open("readCount")
 	afterDedupReads = int(infile.readline().rstrip())
 	infile.close()
+	outfile.write(gene+"\t"+str(beforeDedupReads)+"\t"+str(afterDedupReads)+"\n")
 	print("Extracting reads....")
 	os.system(condaDir+"/bin/bam2fastq  -o read#.fq alignment_removedDup.bam")
 
@@ -69,6 +72,7 @@ for gene in hvg:
 
 os.system("cat ./reads/*dedup_1.fastq > all_1.fastq")
 os.system("cat ./reads/*dedup_2.fastq > all_2.fastq")
+outfile.close()
 
 
 
