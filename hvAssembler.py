@@ -6,7 +6,6 @@ parser.add_argument("-1", "--read1", type=str, required=True, help="Path to the 
 parser.add_argument("-2", "--read2", type=str, required=True, help="Path to the fastq file 2")
 parser.add_argument("-c","--conda_directory",type=str, required=True,help="Path to the conda 3 environment")
 parser.add_argument("-t","--num_threads",type=str, required=False,help="number of threads")
-parser.add_argument("-s","--savage_folder",type=str, required=True,help="Savage executable folder")
 parser.add_argument("-o","--output_folder",type=str, required=True,help="The name of the output folder")
 args = vars(parser.parse_args())
 condaDir = args['conda_directory']
@@ -20,8 +19,8 @@ else:
 
 
 hvg = ['RL12','RL13','RL5A','RL6','UL11','UL120','UL139','UL146','UL1','UL20','UL73','UL74','UL9']
-os.system("mkdir -p "+outputFolder+"./reads")
-os.system("mkdir -p "+outputFolder+"./scaffolds")
+os.system("mkdir -p ./"+outputFolder+"/reads")
+os.system("mkdir -p ./"+outputFolder+"/scaffolds")
 
 for gene in hvg:
 	print("Indexing reference for gene %s" %gene)
@@ -65,7 +64,7 @@ for gene in hvg:
 	if os.path.isfile("./outputSpades/scaffolds.fasta") == True:
 		os.system("mv ./outputSpades/scaffolds.fasta ./"+outputFolder+"/scaffolds/"+gene+"_scaffolds.fasta")
 
-	os.system("rm -rf alignment* merged.bam firstMapped.bam readCount secondMapped.bam bothMapped.bam reference* outputSpades dedupped.bam rg_added_sorted.bam")
+	os.system("rm -rf alignment* merged.bam firstMapped.bam readCount secondMapped.bam bothMapped.bam reference* outputSpades output.metrics dedupped.bai dedupped.bam rg_added_sorted.bam")
 
 
 os.system("cat ./reads/*dedup_1.fastq > all_1.fastq")
