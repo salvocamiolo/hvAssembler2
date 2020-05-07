@@ -35,7 +35,7 @@ for gene in hvg:
 	print("Merging alignments....")
 	os.system(condaDir+"/bin/samtools merge -f merged.bam firstMapped.bam secondMapped.bam bothMapped.bam")
 	print("Extracting reads....")
-	os.system(condaDir+"/bin/bam2fastq  -o read#.fq merged.fastq")
+	os.system(condaDir+"/bin/bam2fastq  -o read#.fq merged.bam")
 
 	print("finished")
 	sys.stdin.read(1)
