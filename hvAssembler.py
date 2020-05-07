@@ -7,10 +7,12 @@ parser.add_argument("-2", "--read2", type=str, required=True, help="Path to the 
 parser.add_argument("-c","--conda_directory",type=str, required=True,help="Path to the conda 3 environment")
 parser.add_argument("-t","--num_threads",type=str, required=False,help="number of threads")
 parser.add_argument("-s","--savage_folder",type=str, required=True,help="Savage executable folder")
+parser.add_argument("-o","--output_folder",type=str. required=True,help="The name of the output folder")
 args = vars(parser.parse_args())
 condaDir = args['conda_directory']
 read1 = args['read1']
 read2 = args['read2']
+outputFolder = args['output_folder']
 if not args['num_threads']:
 	threads = 1
 else:
@@ -18,8 +20,8 @@ else:
 
 
 hvg = ['RL12','RL13','RL5A','RL6','UL11','UL120','UL139','UL146','UL1','UL20','UL73','UL74','UL9']
-os.system("mkdir -p reads")
-os.system("mkdir -p scaffolds")
+os.system("mkdir -p "+outputFolder+"./reads")
+os.system("mkdir -p "+outputFolder+"./scaffolds")
 
 for gene in hvg:
 	print("Indexing reference for gene %s" %gene)
@@ -36,27 +38,39 @@ for gene in hvg:
 	os.system(condaDir+"/bin/samtools view -h -b -F12 alignment.bam > bothMapped.bam")
 	print("Merging alignments....")
 	os.system(condaDir+"/bin/samtools merge -f merged.bam firstMapped.bam secondMapped.bam bothMapped.bam")
+	print("Calculating number of original reads....")
+	os.system(condaDir+"/bin/samtools view merged.bam | wc -l >readCount")
+	infile = open("readCount")
+	beforeDedupReads = int(infile.readline().rstrip())
+	infile.close()
 	print("Picard add groups....")
 	os.system(condaDir+"/bin/picard AddOrReplaceReadGroups I=merged.bam O=rg_added_sorted.bam SO=coordinate RGID=id RGLB=library RGPL=Ilumina RGPU=machine RGSM=Consensus >null 2>&1")
 	print("Picard mark duplicates....")
 	os.system(condaDir+"/bin/picard MarkDuplicates I=rg_added_sorted.bam O=dedupped.bam  CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT M=output.metrics >null 2>&1")
 	print("Discarding reads with duplicates....")
 	os.system(condaDir+"/bin/samtools view -h -b -F 1024 dedupped.bam > alignment_removedDup.bam")
-	
+	print("Calculating number of deduplicated reads....")
+	os.system(condaDir+"/bin/samtools view alignment_removedDup.bam | wc -l >readCount")
+	infile = open("readCount")
+	afterDedupReads = int(infile.readline().rstrip())
+	infile.close()
 	print("Extracting reads....")
 	os.system(condaDir+"/bin/bam2fastq  -o read#.fq alignment_removedDup.bam")
 
-	print("Performing denovo")
-	os.system(condaDir+"/bin/spades.py -1 read_1.fq -2 read_2.fq --cov-cutoff auto --careful -o outputSpades -t "+threads)
+	print("Performing denovo using spades")
+	os.system(condaDir+"/bin/spades.py -1 read_1.fq -2 read_2.fq --cov-cutoff auto --careful -o outputSpades -t "+threads+" >null 2>&1")
 
-	os.system("mv read_1.fq ./reads/"+gene+"_dedup_1.fastq")
-	os.system("mv read_2.fq ./reads/"+gene+"_dedup_2.fastq")
+	os.system("mv read_1.fq ./"+outputFolder+"/reads/"+gene+"_dedup_1.fastq")
+	os.system("mv read_2.fq ./"+outputFolder+"/reads/"+gene+"_dedup_2.fastq")
 	if os.path.isfile("./outputSpades/scaffolds.fasta") == True:
-		os.system("mv ./outputSpades/scaffolds.fasta ./scaffolds/"+gene+"_scaffolds.fasta")
+		os.system("mv ./outputSpades/scaffolds.fasta ./"+outputFolder+"/scaffolds/"+gene+"_scaffolds.fasta")
 
-	print("finished")
-	sys.stdin.read(1)
-	os.system("rm -rf alignment* merged.bam firstMapped.bam secondMapped.bam bothMapped.bam reference* outputSpades dedupped.bam rg_added_sorted.bam")
+	os.system("rm -rf alignment* merged.bam firstMapped.bam readCount secondMapped.bam bothMapped.bam reference* outputSpades dedupped.bam rg_added_sorted.bam")
+
+
+os.system("cat ./reads/*dedup_1.fastq > all_1.fastq")
+os.system("cat ./reads/*dedup_2.fastq > all_2.fastq")
+
 
 
 
