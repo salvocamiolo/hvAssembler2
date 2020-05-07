@@ -7,7 +7,7 @@ parser.add_argument("-2", "--read2", type=str, required=True, help="Path to the 
 parser.add_argument("-c","--conda_directory",type=str, required=True,help="Path to the conda 3 environment")
 parser.add_argument("-t","--num_threads",type=str, required=False,help="number of threads")
 parser.add_argument("-s","--savage_folder",type=str, required=True,help="Savage executable folder")
-parser.add_argument("-o","--output_folder",type=str. required=True,help="The name of the output folder")
+parser.add_argument("-o","--output_folder",type=str, required=True,help="The name of the output folder")
 args = vars(parser.parse_args())
 condaDir = args['conda_directory']
 read1 = args['read1']
