@@ -18,6 +18,8 @@ else:
 
 
 hvg = ['RL12','RL13','RL5A','RL6','UL11','UL120','UL139','UL146','UL1','UL20','UL73','UL74','UL9']
+os.system("mkdir -p reads")
+os.system("mkdir -p scaffolds")
 
 for gene in hvg:
 	print("Indexing reference for gene %s" %gene)
@@ -34,12 +36,27 @@ for gene in hvg:
 	os.system(condaDir+"/bin/samtools view -h -b -F12 alignment.bam > bothMapped.bam")
 	print("Merging alignments....")
 	os.system(condaDir+"/bin/samtools merge -f merged.bam firstMapped.bam secondMapped.bam bothMapped.bam")
+	print("Picard add groups....")
+    os.system(condaDir+"/bin/picard AddOrReplaceReadGroups I=merged.bam O=rg_added_sorted.bam SO=coordinate RGID=id RGLB=library RGPL=Ilumina RGPU=machine RGSM=Consensus >null 2>&1")
+    print("Picard mark duplicates....")
+    os.system(condaDir+"/bin/picard MarkDuplicates I=rg_added_sorted.bam O=dedupped.bam  CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT M=output.metrics >null 2>&1")
+    print("Discarding reads with duplicates....")
+    os.system(condaDir+"/bin/samtools view -h -b -F 1024 dedupped.bam > alignment_removedDup.bam")
+	
 	print("Extracting reads....")
-	os.system(condaDir+"/bin/bam2fastq  -o read#.fq merged.bam")
+	os.system(condaDir+"/bin/bam2fastq  -o read#.fq alignment_removedDup.bam")
+
+	print("Performing denovo")
+	os.system(condaDir+"/bin/spades.py -1 read_1.fq -2 read_2.fq --cov-cutoff auto --careful -o outputSpades -t "+threads)
+
+	os.system("mv read_1.fq ./reads/"+gene+"_dedup_1.fastq")
+	os.system("mv read_2.fq ./reads/"+gene+"_dedup_2.fastq")
+	if os.path.isfile("./outputSpades/scaffolds.fasta") == True:
+		os.system("mv ./outputSpades/scaffolds.fasta ./scaffolds/"+gene+"_scaffolds.fasta")
 
 	print("finished")
 	sys.stdin.read(1)
-	os.system("rm -f alignment* merged.bam firstMapped.bam secondMapped.bam bothMapped.bam reference*")
+	os.system("rm -rf alignment* merged.bam firstMapped.bam secondMapped.bam bothMapped.bam reference* outputSpades dedupped.bam rg_added_sorted.bam")
 
 
 
