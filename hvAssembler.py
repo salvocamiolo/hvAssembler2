@@ -36,7 +36,7 @@ for gene in hvg:
 	print("Collecting both mapped reads....")
 	os.system(condaDir+"/bin/samtools view -h -b -F12 alignment.bam > bothMapped.bam")
 	print("Merging alignments....")
-	os.system(condaDir+"/bin/samtools merge -f merged.bam firstMapped.bam secondMapped.bam bothMapped.bam")
+	os.system(condaDir+"/bin/samtools merge merged.bam firstMapped.bam secondMapped.bam bothMapped.bam")
 	print("Calculating number of original reads....")
 	os.system(condaDir+"/bin/samtools view merged.bam | wc -l >readCount")
 	infile = open("readCount")
@@ -64,7 +64,7 @@ for gene in hvg:
 	if os.path.isfile("./outputSpades/scaffolds.fasta") == True:
 		os.system("mv ./outputSpades/scaffolds.fasta ./"+outputFolder+"/scaffolds/"+gene+"_scaffolds.fasta")
 
-	os.system("rm -rf alignment* merged.bam firstMapped.bam readCount secondMapped.bam bothMapped.bam reference* outputSpades output.metrics dedupped.bai dedupped.bam rg_added_sorted.bam")
+	os.system("rm -rf all_* alignment* null merged.bam firstMapped.bam readCount secondMapped.bam bothMapped.bam reference* outputSpades output.metrics dedupped.bai dedupped.bam rg_added_sorted.bam")
 
 
 os.system("cat ./reads/*dedup_1.fastq > all_1.fastq")
