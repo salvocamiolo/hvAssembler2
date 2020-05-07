@@ -70,8 +70,8 @@ for gene in hvg:
 	os.system("rm -rf all_* alignment* null merged.bam firstMapped.bam readCount secondMapped.bam bothMapped.bam reference* outputSpades output.metrics dedupped.bai dedupped.bam rg_added_sorted.bam")
 
 
-os.system("cat ./reads/*dedup_1.fastq > all_1.fastq")
-os.system("cat ./reads/*dedup_2.fastq > all_2.fastq")
+os.system("cat ./"+outputFolder+"/reads/*dedup_1.fastq > ./"+outputFolder+"/reads/all_1.fastq")
+os.system("cat ./"+outputFolder+"/reads/*dedup_2.fastq > ./"+outputFolder+"/reads/all_2.fastq")
 outfile.close()
 
 

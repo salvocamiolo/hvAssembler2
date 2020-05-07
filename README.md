@@ -25,7 +25,11 @@ hvAssembler.py [-h] -1 READ1 -2 READ2 -c CONDA_DIRECTORY
                       
 The fastq files for the paired end reads and the output folder must be provided.
 Also the Conda_directory is compulsory and you can use that in my home (see example below)
-If the number of threads is not specified it will run on 1 thread     
+If the number of threads is not specified it will run on 1 thread.
+An example command is the following:
+
+python3 hvAssembler.py -1 read_1.fastq -2 read_2.fastq -c /home3/scc20x/miniconda3/ -t 6 -o outputFolder 
+
 
 ## What will it produce?
 In the output folder you will find the following:
