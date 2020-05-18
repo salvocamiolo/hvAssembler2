@@ -18,7 +18,7 @@ else:
 	threads = args['num_threads']
 
 
-hvg = ['RL12','RL13','RL5A','RL6','UL11','UL120','UL139','UL146','UL1','UL20','UL73','UL74','UL9']
+hvg = ['RL12','RL13','RL5A','RL6','UL11','UL120','UL139','UL146','UL1','UL20','UL73','UL74','UL9','UL55','UL75','UL100']
 os.system("mkdir -p ./"+outputFolder+"/reads")
 os.system("mkdir -p ./"+outputFolder+"/scaffolds")
 outfile = open("./"+outputFolder+"/deduplicationStats.txt","w")
